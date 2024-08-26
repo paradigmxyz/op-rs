@@ -1,0 +1,46 @@
+[package]
+name = "op-rpc"
+description = "Consensus RPC for Rollup Nodes"
+version = "0.0.0"
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+keywords.workspace = true
+categories.workspace = true
+
+[dependencies]
+# op-alloy 
+# op-alloy-rpc-jsonrpsee isn't published yet, so we need to use the git version
+op-alloy-rpc-jsonrpsee = { git = "https://github.com/alloy-rs/op-alloy", branch = "main", features = ["client"] }
+op-alloy-rpc-types = { git = "https://github.com/alloy-rs/op-alloy", branch = "main" }
+
+# Alloy
+alloy-eips.workspace = true
+
+# Misc
+tracing.workspace = true
+jsonrpsee.workspace = true
+async-trait.workspace = true
+
+# `reth` feature flag dependencies
+alloy = { workspace = true, optional = true }
+reqwest = { workspace = true, optional = true }
+thiserror = { workspace = true, optional = true }
+serde_json = { workspace = true, optional = true }
+jsonrpsee-types = { workspace = true, optional = true }
+reth-rpc-types = { workspace = true, optional = true }
+reth-rpc-eth-types = { workspace = true, optional = true }
+
+[features]
+default = ["reth"]
+reth = [
+  "dep:alloy",
+  "dep:reqwest",
+  "dep:serde_json",
+  "dep:thiserror",
+  "dep:jsonrpsee-types",
+  "dep:reth-rpc-types",
+  "dep:reth-rpc-eth-types",
+]

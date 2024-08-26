@@ -15,6 +15,7 @@ members = [
   "crates/net",
   "crates/kona-providers",
   "crates/rollup",
+  "crates/rpc",
   "crates/ser",
 ]
 default-members = ["bin/hera"]
@@ -133,12 +134,17 @@ alloy = { version = "0.2", features = [
     "consensus",
 ] }
 alloy-rlp = "0.3.4"
+alloy-eips = { version = "0.2", default-features = false }
 
 # Tokio
 tokio = { version = "1.21", default-features = false }
 
 # SSZ
 ssz_rs = "0.9.0"
+
+# rpc
+jsonrpsee = { version = "0.24", features = ["jsonrpsee-core", "client-core", "server-core", "macros"] }
+jsonrpsee-types = "0.24"
 
 # Reth
 reth = { git = "https://github.com/paradigmxyz/reth", version = "1.0.5" }
@@ -155,6 +161,10 @@ reth-provider = { git = "https://github.com/paradigmxyz/reth", version = "1.0.5"
 reth-revm = { git = "https://github.com/paradigmxyz/reth", version = "1.0.5" }
 reth-evm = { git = "https://github.com/paradigmxyz/reth", version = "1.0.5" }
 reth-tracing = { git = "https://github.com/paradigmxyz/reth", version = "1.0.5" }
+reth-rpc-types = { git = "https://github.com/paradigmxyz/reth", version = "1.0.5" }
+reth-rpc-eth-api = { git = "https://github.com/paradigmxyz/reth", version = "1.0.5" }
+reth-rpc-eth-types = { git = "https://github.com/paradigmxyz/reth", version = "1.0.5" }
+
 
 # Networking
 snap = "1.1.1"
@@ -164,14 +174,17 @@ libp2p-identity = { version = "0.2.9", features = [ "secp256k1" ] }
 libp2p = { version = "0.54.0", features = ["macros", "tokio", "tcp", "noise", "gossipsub", "ping", "yamux"] }
 
 # Misc
-tracing = "0.1.0"
-eyre = "0.6.12"
 clap = "4" 
+url = "2.5.2"
+eyre = "0.6.12"
 lazy_static = "1.5.0"
 futures = "0.3.30"
-async-trait = "0.1.81"
+tracing = "0.1.0"
+thiserror = "1.0"
 hashbrown = "0.14.5"
+async-trait = "0.1.81"
 parking_lot = "0.12.3"
 unsigned-varint = "0.8.0"
+serde_json = "1.0.94"
+reqwest = { version = "0.12", features = ["rustls-tls-native-roots"] }
 rand = { version = "0.8.3", features = ["small_rng"], default-features = false }
-url = "2.5.2"
