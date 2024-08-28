@@ -3894,7 +3894,7 @@ dependencies = [
  "kona-primitives",
  "lru",
  "miniz_oxide 0.7.4",
- "op-alloy-consensus",
+ "op-alloy-consensus 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "reqwest",
  "revm",
  "serde",
@@ -3916,7 +3916,7 @@ dependencies = [
  "anyhow",
  "c-kzg",
  "hashbrown 0.14.5",
- "op-alloy-consensus",
+ "op-alloy-consensus 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "revm",
  "serde",
  "sha2 0.10.8",
@@ -5162,6 +5162,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "op-alloy-consensus"
+version = "0.1.5"
+source = "git+https://github.com/alloy-rs/op-alloy?branch=main#084605ac95f5c288ae1cef9c037b5e1d081ae38b"
+dependencies = [
+ "alloy-consensus",
+ "alloy-eips",
+ "alloy-primitives",
+ "alloy-rlp",
+ "alloy-serde",
+ "derive_more 0.99.18",
+ "serde",
+]
+
+[[package]]
 name = "op-alloy-network"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5171,8 +5185,19 @@ dependencies = [
  "alloy-network",
  "alloy-primitives",
  "alloy-rpc-types-eth",
- "op-alloy-consensus",
- "op-alloy-rpc-types",
+ "op-alloy-consensus 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "op-alloy-rpc-types 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "op-alloy-rpc-jsonrpsee"
+version = "0.1.5"
+source = "git+https://github.com/alloy-rs/op-alloy?branch=main#084605ac95f5c288ae1cef9c037b5e1d081ae38b"
+dependencies = [
+ "alloy-eips",
+ "alloy-primitives",
+ "jsonrpsee",
+ "op-alloy-rpc-types 0.1.5 (git+https://github.com/alloy-rs/op-alloy?branch=main)",
 ]
 
 [[package]]
@@ -5185,7 +5210,21 @@ dependencies = [
  "alloy-primitives",
  "alloy-rpc-types-eth",
  "alloy-serde",
- "op-alloy-consensus",
+ "op-alloy-consensus 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "op-alloy-rpc-types"
+version = "0.1.5"
+source = "git+https://github.com/alloy-rs/op-alloy?branch=main#084605ac95f5c288ae1cef9c037b5e1d081ae38b"
+dependencies = [
+ "alloy-network",
+ "alloy-primitives",
+ "alloy-rpc-types-eth",
+ "alloy-serde",
+ "op-alloy-consensus 0.1.5 (git+https://github.com/alloy-rs/op-alloy?branch=main)",
  "serde",
  "serde_json",
 ]
@@ -5209,6 +5248,25 @@ dependencies = [
  "tokio",
  "tracing",
  "unsigned-varint 0.8.0",
+]
+
+[[package]]
+name = "op-rpc"
+version = "0.0.0"
+dependencies = [
+ "alloy",
+ "alloy-eips",
+ "async-trait",
+ "jsonrpsee",
+ "jsonrpsee-types",
+ "op-alloy-rpc-jsonrpsee",
+ "op-alloy-rpc-types 0.1.5 (git+https://github.com/alloy-rs/op-alloy?branch=main)",
+ "reqwest",
+ "reth-rpc-eth-types",
+ "reth-rpc-types",
+ "serde_json",
+ "thiserror",
+ "tracing",
 ]
 
 [[package]]
