@@ -1,13 +1,16 @@
 //! Driver for network services.
 
 use crate::{
-    builder::NetworkDriverBuilder, discovery::driver::DiscoveryDriver,
-    gossip::driver::GossipDriver, types::envelope::ExecutionPayloadEnvelope,
+    builder::NetworkDriverBuilder,
+    discovery::driver::DiscoveryDriver,
+    gossip::driver::GossipDriver,
+    types::{envelope::ExecutionPayloadEnvelope, peer::Peer},
 };
 use alloy::primitives::Address;
 use eyre::Result;
 use std::sync::mpsc::Receiver;
 use tokio::{select, sync::watch};
+use tracing::error;
 
 /// NetworkDriver
 ///
@@ -44,14 +47,21 @@ impl NetworkDriver {
 
     /// Starts the Discv5 peer discovery & libp2p services
     /// and continually listens for new peers and messages to handle
-    pub fn start(mut self) -> Result<()> {
+    pub fn start(mut self) -> Result<Receiver<Peer>> {
         let mut peer_recv = self.discovery.start()?;
+        let (backchannel_peer_send, backchannel_peer_recv) = std::sync::mpsc::channel::<Peer>();
         self.gossip.listen()?;
         tokio::spawn(async move {
             loop {
                 select! {
                     peer = peer_recv.recv() => {
-                        self.gossip.dial_opt(peer).await;
+                        self.gossip.dial_opt(peer.clone()).await;
+                        let Some(peer) = peer else {
+                            break;
+                        };
+                        if let Err(e) = backchannel_peer_send.send(peer.clone()) {
+                            error!("Failed to send peer to backchannel: {:?}", e);
+                        }
                     },
                     event = self.gossip.select_next_some() => {
                         self.gossip.handle_event(event);
@@ -60,6 +70,6 @@ impl NetworkDriver {
             }
         });
 
-        Ok(())
+        Ok(backchannel_peer_recv)
     }
 }

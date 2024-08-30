@@ -6,7 +6,7 @@ use libp2p::{multiaddr::Protocol, Multiaddr};
 use std::net::{IpAddr, SocketAddr};
 
 /// A wrapper around a peer's [SocketAddr].
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Peer {
     /// The peer's [SocketAddr].
     pub socket: SocketAddr,
