@@ -138,8 +138,9 @@ alloy = { version = "0.2", features = [
     "ssz"
 ] }
 alloy-primitives = { version = "0.8", features = ["serde"] }
-alloy-rlp = "0.3.4"
+alloy-rlp = "0.3"
 op-alloy-rpc-types = "0.2"
+op-alloy-rpc-jsonrpsee = { version = "0.2", features = ["client"] }
 
 # Tokio
 tokio = { version = "1.21", default-features = false }
