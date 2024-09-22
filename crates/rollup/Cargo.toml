@@ -10,6 +10,7 @@ keywords.workspace = true
 categories.workspace = true
 
 [dependencies]
+# Workspace
 kona-providers.workspace = true
 
 # OP Stack Dependencies
@@ -17,6 +18,7 @@ kona-derive.workspace = true
 op-alloy-genesis.workspace = true
 op-alloy-protocol.workspace = true
 op-alloy-rpc-types-engine.workspace = true
+op-alloy-provider.workspace = true
 superchain = { workspace = true, default-features = false }
 
 # Reth Dependencies
@@ -28,6 +30,9 @@ reth-execution-types.workspace = true
 # Telemetry
 tracing-subscriber = { version = "0.3.18", features = ["env-filter", "fmt"] }   
 metrics-exporter-prometheus = { version = "0.15.3", features = ["http-listener"] }
+
+# Async
+tower = "0.4"
 
 # Misc 
 url.workspace = true
@@ -41,6 +46,7 @@ tokio.workspace = true
 futures.workspace = true
 alloy.workspace = true
 hashbrown.workspace = true
+thiserror.workspace = true
 
 [features]
 default = ["online"]

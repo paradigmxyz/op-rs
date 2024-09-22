@@ -1,7 +1,7 @@
 //! Discovery Module.
 
 use eyre::Result;
-use std::time::Duration;
+use std::{fmt::Debug, time::Duration};
 use tokio::{
     sync::mpsc::{channel, Receiver},
     time::sleep,
@@ -24,6 +24,12 @@ pub struct DiscoveryDriver {
     pub disc: Discv5,
     /// The chain ID of the network.
     pub chain_id: u64,
+}
+
+impl Debug for DiscoveryDriver {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("DiscoveryDriver").field("chain_id", &self.chain_id).finish()
+    }
 }
 
 impl DiscoveryDriver {

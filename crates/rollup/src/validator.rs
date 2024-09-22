@@ -11,16 +11,15 @@ use alloy::{
 use async_trait::async_trait;
 use eyre::{bail, eyre, Result};
 use op_alloy_rpc_types_engine::{OptimismAttributesWithParent, OptimismPayloadAttributes};
-use reqwest::{
-    header::{AUTHORIZATION, CONTENT_TYPE},
-    Client, StatusCode,
-};
 use reth::rpc::types::{
-    engine::{Claims, JwtSecret},
+    engine::{ForkchoiceState, JwtSecret},
     Header,
 };
-use tracing::error;
+use reth_node_api::EngineApiMessageVersion;
+use tracing::{error, warn};
 use url::Url;
+
+use crate::EngineApiClient;
 
 /// AttributesValidator
 ///
@@ -132,55 +131,39 @@ impl AttributesValidator for TrustedValidator {
 /// The engine API will return a `VALID` or `INVALID` response.
 #[derive(Debug, Clone)]
 pub struct EngineApiValidator {
-    /// The engine API URL.
-    url: Url,
-    /// The reqwest client.
-    client: Client,
-    /// The JWT secret token for the engine API.
-    jwt_secret: JwtSecret,
+    client: EngineApiClient,
 }
 
 impl EngineApiValidator {
     /// Creates a new [`EngineApiValidator`] from the provided [Url] and [JwtSecret].
+    ///
+    /// The inner client will work with either HTTP, Websocket, or IPC transport based
+    /// on the provided URL.
     #[allow(unused)]
-    pub fn new_http(url: Url, jwt: JwtSecret) -> Self {
-        Self { url, client: Client::new(), jwt_secret: jwt }
+    pub async fn new(url: Url, jwt: JwtSecret) -> eyre::Result<Self> {
+        Ok(Self { client: EngineApiClient::new(url, jwt).await? })
     }
 }
 
 #[async_trait]
 impl AttributesValidator for EngineApiValidator {
     async fn validate(&self, attributes: &OptimismAttributesWithParent) -> Result<bool> {
-        let request_body = serde_json::json!({
-            "id": 1,
-            "jsonrpc": "2.0",
-            "method": "engine_newPayloadV2",
-            "params": [attributes.attributes]
-        });
+        // TODO: use the correct values
+        let fork_choice_state = ForkchoiceState {
+            head_block_hash: attributes.parent.block_info.hash,
+            finalized_block_hash: attributes.parent.block_info.hash,
+            safe_block_hash: attributes.parent.block_info.hash,
+        };
 
-        let claims = Claims::default();
-        let jwt = self.jwt_secret.encode(&claims)?;
+        let version = EngineApiMessageVersion::V2; // TODO: Determine the correct version
+        let attributes = Some(attributes.attributes.clone());
+        let fcu = self.client.fork_choice_updated(version, fork_choice_state, attributes).await?;
 
-        let response = self
-            .client
-            .post(self.url.clone())
-            .header(CONTENT_TYPE, "application/json")
-            .header(AUTHORIZATION, format!("Bearer {}", jwt))
-            .json(&request_body)
-            .send()
-            .await?;
-
-        let status = response.status();
-        let body = response.json::<serde_json::Value>().await?;
-        match status {
-            StatusCode::OK => Ok(body
-                .pointer("/result/status")
-                .and_then(|status| status.as_str())
-                .map_or(false, |status| status == "VALID")),
-            _ => {
-                error!(?body, "Engine API returned status: {}", status);
-                bail!("Engine API returned status: {} and body: {:#?}", status, body);
-            }
+        if fcu.is_valid() {
+            Ok(true)
+        } else {
+            warn!(status = %fcu.payload_status, "Engine API returned invalid fork choice update");
+            Ok(false)
         }
     }
 }

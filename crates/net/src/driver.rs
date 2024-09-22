@@ -15,6 +15,7 @@ use tokio::{select, sync::watch};
 /// There are two core services that are run by the driver:
 /// - Block gossip through Gossipsub.
 /// - Peer discovery with `discv5`.
+#[derive(Debug)]
 pub struct NetworkDriver {
     /// Channel to receive unsafe blocks.
     pub(crate) unsafe_block_recv: Option<Receiver<ExecutionPayloadEnvelope>>,

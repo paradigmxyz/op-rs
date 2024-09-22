@@ -38,7 +38,7 @@ fn main() -> Result<()> {
 
             let cfg = hera_args.get_l2_config()?;
             let node = EthereumNode::default();
-            let hera = move |ctx| async { Ok(Driver::exex(ctx, hera_args, cfg).start()) };
+            let hera = move |ctx| async { Ok(Driver::exex(ctx, hera_args, cfg).await.start()) };
             let handle = builder.node(node).install_exex(HERA_EXEX_ID, hera).launch().await?;
             handle.wait_for_node_exit().await
         } else {

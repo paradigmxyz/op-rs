@@ -53,6 +53,7 @@ alloy = { version = "0.3.6", features = [
     "consensus",
     "rpc-types",
     "rpc-types-engine",
+    "json-rpc",
     "network",
     "ssz"
 ] }
@@ -60,8 +61,10 @@ alloy-primitives = { version = "0.8", features = ["serde"] }
 alloy-rlp = "0.3"
 op-alloy-protocol = { version = "0.2.12", default-features = false }
 op-alloy-rpc-types = { version = "0.2.12", default-features = false }
-op-alloy-rpc-types-engine = { version = "0.2.12", default-features = false }
 op-alloy-genesis = { version = "0.2.12", default-features = false }
+# TODO: Use a new version once it's released
+op-alloy-rpc-types-engine = { git = "https://github.com/alloy-rs/op-alloy", rev = "f6d9d72", default-features = false }
+op-alloy-provider = { git = "https://github.com/alloy-rs/op-alloy", rev = "f6d9d72", default-features = false }
 
 # Tokio
 tokio = { version = "1.21", default-features = false }
@@ -110,6 +113,7 @@ hashbrown = "0.14.5"
 parking_lot = "0.12.3"
 unsigned-varint = "0.8.0"
 rand = { version = "0.8.3", features = ["small_rng"], default-features = false }
+thiserror = "1.0.63"
 url = "2.5.2"
 
 [workspace.metadata.docs.rs]

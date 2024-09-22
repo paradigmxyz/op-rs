@@ -1,5 +1,7 @@
 //! Consensus-layer gossipsub driver for Optimism.
 
+use std::fmt::Debug;
+
 use crate::gossip::{
     behaviour::Behaviour,
     event::Event,
@@ -18,6 +20,12 @@ pub struct GossipDriver {
     pub addr: Multiaddr,
     /// Block handler.
     pub handler: BlockHandler,
+}
+
+impl Debug for GossipDriver {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("GossipDriver").field("addr", &self.addr).finish()
+    }
 }
 
 impl GossipDriver {

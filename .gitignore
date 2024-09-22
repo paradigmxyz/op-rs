@@ -32,3 +32,6 @@ lcov.info
 
 # Rust bug report
 rustc-ice-*
+
+# Used for testing
+jwt.hex

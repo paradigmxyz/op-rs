@@ -10,6 +10,9 @@ pub use driver::Driver;
 mod cli;
 pub use cli::HeraArgsExt;
 
+mod engine;
+pub use engine::EngineApiClient;
+
 mod validator;
 pub use validator::AttributesValidator;
 

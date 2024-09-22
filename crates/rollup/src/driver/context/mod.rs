@@ -79,8 +79,13 @@ impl Blocks {
         *self.0.last_key_value().expect("Blocks should have at least one block").0
     }
 
-    /// Returns the block at the fork point of the chain.
-    pub fn fork_block(&self) -> BlockNumber {
+    /// Returns a reference to the block at the tip of the chain.
+    pub fn tip_block(&self) -> &Block<TxEnvelope> {
+        self.0.get(&self.tip()).expect("Blocks should have at least one block")
+    }
+
+    /// Returns the block number at the fork point of the chain (the block before the first).
+    pub fn fork_block_number(&self) -> BlockNumber {
         let first = self.0.first_key_value().expect("Blocks should have at least one block").0;
         first.saturating_sub(1)
     }

@@ -142,6 +142,7 @@ dependencies = [
  "alloy-core",
  "alloy-eips",
  "alloy-genesis",
+ "alloy-json-rpc",
  "alloy-network",
  "alloy-provider",
  "alloy-pubsub",
@@ -4007,10 +4008,10 @@ dependencies = [
  "kona-primitives",
  "lru",
  "miniz_oxide",
- "op-alloy-consensus",
- "op-alloy-genesis",
- "op-alloy-protocol",
- "op-alloy-rpc-types-engine",
+ "op-alloy-consensus 0.2.12 (registry+https://github.com/rust-lang/crates.io-index)",
+ "op-alloy-genesis 0.2.12 (registry+https://github.com/rust-lang/crates.io-index)",
+ "op-alloy-protocol 0.2.12 (registry+https://github.com/rust-lang/crates.io-index)",
+ "op-alloy-rpc-types-engine 0.2.12 (registry+https://github.com/rust-lang/crates.io-index)",
  "reqwest",
  "serde",
  "thiserror 1.0.63 (git+https://github.com/quartiq/thiserror?branch=no-std)",
@@ -4029,9 +4030,9 @@ dependencies = [
  "alloy-rlp",
  "anyhow",
  "c-kzg",
- "op-alloy-consensus",
- "op-alloy-genesis",
- "op-alloy-protocol",
+ "op-alloy-consensus 0.2.12 (registry+https://github.com/rust-lang/crates.io-index)",
+ "op-alloy-genesis 0.2.12 (registry+https://github.com/rust-lang/crates.io-index)",
+ "op-alloy-protocol 0.2.12 (registry+https://github.com/rust-lang/crates.io-index)",
  "revm",
  "serde",
  "sha2 0.10.8",
@@ -4050,7 +4051,7 @@ dependencies = [
  "hashbrown 0.14.5",
  "kona-derive",
  "kona-primitives",
- "op-alloy-protocol",
+ "op-alloy-protocol 0.2.12 (registry+https://github.com/rust-lang/crates.io-index)",
  "parking_lot 0.12.3",
  "reth",
  "tracing",
@@ -5195,10 +5196,38 @@ dependencies = [
 ]
 
 [[package]]
+name = "op-alloy-consensus"
+version = "0.2.12"
+source = "git+https://github.com/alloy-rs/op-alloy?rev=f6d9d72#f6d9d723fff605c8b87a95548d4eb56338dc2c1e"
+dependencies = [
+ "alloy-consensus",
+ "alloy-eips",
+ "alloy-primitives",
+ "alloy-rlp",
+ "alloy-serde",
+ "derive_more",
+ "serde",
+ "spin 0.9.8",
+]
+
+[[package]]
 name = "op-alloy-genesis"
 version = "0.2.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6e1b8a9b70da0e027242ec1762f0f3a386278b6291d00d12ff5a64929dc19f68"
+dependencies = [
+ "alloy-consensus",
+ "alloy-eips",
+ "alloy-primitives",
+ "alloy-sol-types",
+ "serde",
+ "serde_repr",
+]
+
+[[package]]
+name = "op-alloy-genesis"
+version = "0.2.12"
+source = "git+https://github.com/alloy-rs/op-alloy?rev=f6d9d72#f6d9d723fff605c8b87a95548d4eb56338dc2c1e"
 dependencies = [
  "alloy-consensus",
  "alloy-eips",
@@ -5220,9 +5249,39 @@ dependencies = [
  "alloy-rlp",
  "alloy-serde",
  "hashbrown 0.14.5",
- "op-alloy-consensus",
- "op-alloy-genesis",
+ "op-alloy-consensus 0.2.12 (registry+https://github.com/rust-lang/crates.io-index)",
+ "op-alloy-genesis 0.2.12 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde",
+]
+
+[[package]]
+name = "op-alloy-protocol"
+version = "0.2.12"
+source = "git+https://github.com/alloy-rs/op-alloy?rev=f6d9d72#f6d9d723fff605c8b87a95548d4eb56338dc2c1e"
+dependencies = [
+ "alloy-consensus",
+ "alloy-eips",
+ "alloy-primitives",
+ "alloy-rlp",
+ "alloy-serde",
+ "hashbrown 0.14.5",
+ "op-alloy-consensus 0.2.12 (git+https://github.com/alloy-rs/op-alloy?rev=f6d9d72)",
+ "op-alloy-genesis 0.2.12 (git+https://github.com/alloy-rs/op-alloy?rev=f6d9d72)",
+ "serde",
+]
+
+[[package]]
+name = "op-alloy-provider"
+version = "0.2.12"
+source = "git+https://github.com/alloy-rs/op-alloy?rev=f6d9d72#f6d9d723fff605c8b87a95548d4eb56338dc2c1e"
+dependencies = [
+ "alloy-network",
+ "alloy-primitives",
+ "alloy-provider",
+ "alloy-rpc-types-engine",
+ "alloy-transport",
+ "async-trait",
+ "op-alloy-rpc-types-engine 0.2.12 (git+https://github.com/alloy-rs/op-alloy?rev=f6d9d72)",
 ]
 
 [[package]]
@@ -5238,7 +5297,7 @@ dependencies = [
  "alloy-serde",
  "cfg-if",
  "hashbrown 0.14.5",
- "op-alloy-consensus",
+ "op-alloy-consensus 0.2.12 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde",
  "serde_json",
 ]
@@ -5254,9 +5313,25 @@ dependencies = [
  "alloy-rpc-types-engine",
  "alloy-serde",
  "derive_more",
- "op-alloy-consensus",
- "op-alloy-genesis",
- "op-alloy-protocol",
+ "op-alloy-consensus 0.2.12 (registry+https://github.com/rust-lang/crates.io-index)",
+ "op-alloy-genesis 0.2.12 (registry+https://github.com/rust-lang/crates.io-index)",
+ "op-alloy-protocol 0.2.12 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde",
+]
+
+[[package]]
+name = "op-alloy-rpc-types-engine"
+version = "0.2.12"
+source = "git+https://github.com/alloy-rs/op-alloy?rev=f6d9d72#f6d9d723fff605c8b87a95548d4eb56338dc2c1e"
+dependencies = [
+ "alloy-eips",
+ "alloy-primitives",
+ "alloy-rpc-types-engine",
+ "alloy-serde",
+ "derive_more",
+ "op-alloy-consensus 0.2.12 (git+https://github.com/alloy-rs/op-alloy?rev=f6d9d72)",
+ "op-alloy-genesis 0.2.12 (git+https://github.com/alloy-rs/op-alloy?rev=f6d9d72)",
+ "op-alloy-protocol 0.2.12 (git+https://github.com/alloy-rs/op-alloy?rev=f6d9d72)",
  "serde",
 ]
 
@@ -8072,7 +8147,7 @@ dependencies = [
  "alloy-serde",
  "jsonrpsee-types",
  "op-alloy-rpc-types",
- "op-alloy-rpc-types-engine",
+ "op-alloy-rpc-types-engine 0.2.12 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -8586,9 +8661,10 @@ dependencies = [
  "kona-derive",
  "kona-providers",
  "metrics-exporter-prometheus",
- "op-alloy-genesis",
- "op-alloy-protocol",
- "op-alloy-rpc-types-engine",
+ "op-alloy-genesis 0.2.12 (registry+https://github.com/rust-lang/crates.io-index)",
+ "op-alloy-protocol 0.2.12 (registry+https://github.com/rust-lang/crates.io-index)",
+ "op-alloy-provider",
+ "op-alloy-rpc-types-engine 0.2.12 (git+https://github.com/alloy-rs/op-alloy?rev=f6d9d72)",
  "reqwest",
  "reth",
  "reth-execution-types",
@@ -8596,7 +8672,9 @@ dependencies = [
  "reth-node-api",
  "serde_json",
  "superchain",
+ "thiserror 1.0.63 (registry+https://github.com/rust-lang/crates.io-index)",
  "tokio",
+ "tower 0.4.13",
  "tracing",
  "tracing-subscriber",
  "url",
@@ -8999,8 +9077,8 @@ dependencies = [
  "alloy-rlp",
  "eyre",
  "kona-derive",
- "op-alloy-genesis",
- "op-alloy-protocol",
+ "op-alloy-genesis 0.2.12 (registry+https://github.com/rust-lang/crates.io-index)",
+ "op-alloy-protocol 0.2.12 (registry+https://github.com/rust-lang/crates.io-index)",
  "op-alloy-rpc-types",
  "rand",
  "tracing",
@@ -9432,7 +9510,7 @@ dependencies = [
  "alloy-primitives",
  "hashbrown 0.14.5",
  "lazy_static",
- "op-alloy-genesis",
+ "op-alloy-genesis 0.2.12 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde",
  "serde_json",
 ]

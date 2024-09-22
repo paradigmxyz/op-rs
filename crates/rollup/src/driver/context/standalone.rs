@@ -17,7 +17,7 @@ use tokio::{
     sync::mpsc::{self, error::SendError},
     task::JoinHandle,
 };
-use tracing::{debug, error, warn};
+use tracing::{error, warn};
 use url::Url;
 
 use super::{Blocks, ChainNotification, DriverContext};
@@ -51,17 +51,11 @@ pub struct StandaloneHeraContext {
 impl StandaloneHeraContext {
     /// Create a new standalone context that polls for new chains.
     pub async fn new(l1_rpc_url: Url) -> TransportResult<Self> {
-        if l1_rpc_url.scheme().contains("http") {
-            debug!("Polling for new blocks via HTTP");
-            Self::with_http_poller(l1_rpc_url).await
-        } else if l1_rpc_url.scheme().contains("ws") {
-            debug!("Subscribing to new blocks via websocket");
-            Self::with_ws_subscriber(l1_rpc_url).await
-        } else if l1_rpc_url.scheme().contains("file") {
-            debug!("Subscribing to new blocks via IPC");
-            Self::with_ipc_subscriber(l1_rpc_url).await
-        } else {
-            Err(TransportErrorKind::custom_str("Unsupported URL scheme"))
+        match l1_rpc_url.scheme() {
+            "http" | "https" => Self::with_http_poller(l1_rpc_url).await,
+            "ws" | "wss" => Self::with_ws_subscriber(l1_rpc_url).await,
+            "file" => Self::with_ipc_subscriber(l1_rpc_url).await,
+            _ => Err(TransportErrorKind::custom_str("Unsupported URL scheme")),
         }
     }
 
@@ -197,10 +191,6 @@ impl StandaloneHeraContext {
 #[async_trait]
 impl DriverContext for StandaloneHeraContext {
     async fn recv_notification(&mut self) -> Option<ChainNotification> {
-        // TODO: is it ok to skip fetching full txs and receipts here assuming the node will
-        // have a fallback online RPC for that downstream? The driver and provider should be
-        // generic but currently are very coupled to the node mode (standalone vs exex).
-
         let block = self.new_block_rx.recv().await?;
         let block_num = block.header.number;
 
@@ -208,7 +198,7 @@ impl DriverContext for StandaloneHeraContext {
         entry.insert(block.header.hash, block.clone());
 
         if block_num <= self.l1_tip {
-            todo!("handle reorgs");
+            todo!("handle L1 reorgs");
         } else {
             self.l1_tip = block_num;
 

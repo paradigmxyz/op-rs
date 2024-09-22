@@ -53,7 +53,7 @@ pub struct Driver<DC, CP, BP> {
 
 impl<N: FullNodeComponents> Driver<ExExHeraContext<N>, InMemoryChainProvider, LayeredBlobProvider> {
     /// Create a new Hera Execution Extension Driver
-    pub fn exex(ctx: ExExContext<N>, args: HeraArgsExt, cfg: Arc<RollupConfig>) -> Self {
+    pub async fn exex(ctx: ExExContext<N>, args: HeraArgsExt, cfg: Arc<RollupConfig>) -> Self {
         let chain_provider = InMemoryChainProvider::with_capacity(args.l1_chain_cache_size);
         let blob_provider = LayeredBlobProvider::new(
             args.l1_beacon_client_url.clone(),
@@ -65,7 +65,7 @@ impl<N: FullNodeComponents> Driver<ExExHeraContext<N>, InMemoryChainProvider, La
         // to the derivation pipeline's L1 chain provider.
         let exex_ctx = ExExHeraContext::new(ctx, chain_provider.clone());
 
-        Self::with_components(exex_ctx, args, cfg, chain_provider, blob_provider)
+        Self::with_components(exex_ctx, args, cfg, chain_provider, blob_provider).await
     }
 }
 
@@ -77,7 +77,7 @@ impl Driver<StandaloneHeraContext, AlloyChainProvider, DurableBlobProvider> {
             .with_primary(args.l1_beacon_client_url.as_str().trim_end_matches('/').to_string())
             .with_fallback(
                 args.l1_blob_archiver_url
-                    .clone()
+                    .as_ref()
                     .map(|url| url.as_str().trim_end_matches('/').to_string()),
             )
             .build();
@@ -87,7 +87,7 @@ impl Driver<StandaloneHeraContext, AlloyChainProvider, DurableBlobProvider> {
         // from the L1 chain provider directly.
         let standalone_ctx = StandaloneHeraContext::new(args.l1_rpc_url.clone()).await?;
 
-        Ok(Self::with_components(standalone_ctx, args, cfg, chain_provider, blob_provider))
+        Ok(Self::with_components(standalone_ctx, args, cfg, chain_provider, blob_provider).await)
     }
 }
 
@@ -98,30 +98,31 @@ where
     BP: BlobProvider + Clone + Send + Sync + Debug + 'static,
 {
     /// Create a new Hera Driver with the provided components.
-    fn with_components(
+    async fn with_components(
         ctx: DC,
         args: HeraArgsExt,
         cfg: Arc<RollupConfig>,
         l1_chain_provider: CP,
         blob_provider: BP,
     ) -> Self {
-        let cursor = SyncCursor::new(cfg.channel_timeout);
         let validator: Box<dyn AttributesValidator> = match args.validation_mode {
-            ValidationMode::Trusted => Box::new(TrustedValidator::new_http(
-                args.l2_rpc_url.clone(),
-                cfg.canyon_time.unwrap_or(0),
-            )),
-            ValidationMode::EngineApi => Box::new(EngineApiValidator::new_http(
-                args.l2_engine_api_url.expect("Missing L2 engine API URL"),
-                match args.l2_engine_jwt_secret.as_ref() {
-                    Some(fpath) => JwtSecret::from_file(fpath).expect("Invalid L2 JWT secret file"),
-                    None => panic!("Missing L2 engine JWT secret"),
-                },
-            )),
+            ValidationMode::Trusted => {
+                let canyon_activation = cfg.canyon_time.unwrap_or(0);
+                Box::new(TrustedValidator::new_http(args.l2_rpc_url.clone(), canyon_activation))
+            }
+            ValidationMode::EngineApi => {
+                let engine_url = args.l2_engine_api_url.expect("Missing L2 engine API URL");
+                let jwt_secret_file = args.l2_engine_jwt_secret.expect("Missing L2 engine JWT");
+                let jwt_secret = JwtSecret::from_file(&jwt_secret_file).expect("Invalid L2 JWT");
+                let engine = EngineApiValidator::new(engine_url, jwt_secret).await;
+                Box::new(engine.expect("Failed to create Engine API validator"))
+            }
         };
+
+        let cursor = SyncCursor::new(cfg.channel_timeout);
         let l2_chain_provider = AlloyL2ChainProvider::new_http(args.l2_rpc_url, cfg.clone());
 
-        Self { cfg, ctx, l1_chain_provider, blob_provider, l2_chain_provider, cursor, validator }
+        Self { cfg, ctx, l1_chain_provider, l2_chain_provider, blob_provider, cursor, validator }
     }
 
     /// Wait for the L2 genesis' corresponding L1 block to be available in the L1 chain.
@@ -249,7 +250,7 @@ where
             // The reverted chain contains the list of blocks that were invalidated by the
             // reorg. we need to reset the cursor to the last canonical block, which corresponds
             // to the block before the reorg happened.
-            let fork_block = reverted_chain.fork_block();
+            let fork_block = reverted_chain.fork_block_number();
 
             // Find the last known L2 block that is still valid after the reorg,
             // and reset the cursor and pipeline to it.
