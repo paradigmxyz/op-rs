@@ -24,7 +24,3 @@ op-alloy-genesis.workspace = true
 rand.workspace = true
 eyre.workspace = true
 tracing.workspace = true
-
-[features]
-default = ["online"]
-online = ["kona-derive/online"]

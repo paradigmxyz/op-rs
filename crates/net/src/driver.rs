@@ -1,13 +1,14 @@
 //! Driver for network services.
 
-use crate::{
-    builder::NetworkDriverBuilder, discovery::driver::DiscoveryDriver,
-    gossip::driver::GossipDriver, types::envelope::ExecutionPayloadEnvelope,
-};
-use alloy::primitives::Address;
-use eyre::Result;
 use std::sync::mpsc::Receiver;
+
+use alloy::{primitives::Address, rpc::types::engine::ExecutionPayload};
+use eyre::Result;
 use tokio::{select, sync::watch};
+
+use crate::{
+    builder::NetworkDriverBuilder, discovery::driver::DiscoveryDriver, gossip::driver::GossipDriver,
+};
 
 /// NetworkDriver
 ///
@@ -17,7 +18,7 @@ use tokio::{select, sync::watch};
 /// - Peer discovery with `discv5`.
 pub struct NetworkDriver {
     /// Channel to receive unsafe blocks.
-    pub(crate) unsafe_block_recv: Option<Receiver<ExecutionPayloadEnvelope>>,
+    pub(crate) unsafe_block_recv: Option<Receiver<ExecutionPayload>>,
     /// Channel to send unsafe signer updates.
     pub(crate) unsafe_block_signer_sender: Option<watch::Sender<Address>>,
     /// The swarm instance.
@@ -33,7 +34,7 @@ impl NetworkDriver {
     }
 
     /// Take the unsafe block receiver.
-    pub fn take_unsafe_block_recv(&mut self) -> Option<Receiver<ExecutionPayloadEnvelope>> {
+    pub fn take_unsafe_block_recv(&mut self) -> Option<Receiver<ExecutionPayload>> {
         self.unsafe_block_recv.take()
     }
 

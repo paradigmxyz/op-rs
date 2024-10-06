@@ -1,12 +1,13 @@
 //! Block Handler
 
-use crate::types::envelope::ExecutionPayloadEnvelope;
-use alloy::primitives::Address;
-use libp2p::gossipsub::{IdentTopic, Message, MessageAcceptance, TopicHash};
 use std::{
     sync::mpsc::{channel, Receiver, Sender},
     time::SystemTime,
 };
+
+use alloy::{primitives::Address, rpc::types::engine::ExecutionPayload};
+use libp2p::gossipsub::{IdentTopic, Message, MessageAcceptance, TopicHash};
+use op_alloy_rpc_types_engine::OptimismNetworkPayloadEnvelope;
 use tokio::sync::watch;
 
 /// This trait defines the functionality required to process incoming messages
@@ -29,7 +30,7 @@ pub struct BlockHandler {
     /// blockchains.
     pub chain_id: u64,
     /// A channel sender to forward new blocks to other modules
-    pub block_sender: Sender<ExecutionPayloadEnvelope>,
+    pub block_sender: Sender<ExecutionPayload>,
     /// A [Receiver] to monitor changes to the unsafe block signer.
     pub unsafe_signer_recv: watch::Receiver<Address>,
     /// The libp2p topic for pre Canyon/Shangai blocks.
@@ -47,11 +48,11 @@ impl Handler for BlockHandler {
         tracing::debug!("received block");
 
         let decoded = if msg.topic == self.blocks_v1_topic.hash() {
-            ExecutionPayloadEnvelope::decode_v1(&msg.data)
+            OptimismNetworkPayloadEnvelope::decode_v1(&msg.data)
         } else if msg.topic == self.blocks_v2_topic.hash() {
-            ExecutionPayloadEnvelope::decode_v2(&msg.data)
+            OptimismNetworkPayloadEnvelope::decode_v2(&msg.data)
         } else if msg.topic == self.blocks_v3_topic.hash() {
-            ExecutionPayloadEnvelope::decode_v3(&msg.data)
+            OptimismNetworkPayloadEnvelope::decode_v3(&msg.data)
         } else {
             return MessageAcceptance::Reject;
         };
@@ -59,7 +60,7 @@ impl Handler for BlockHandler {
         match decoded {
             Ok(envelope) => {
                 if self.block_valid(&envelope) {
-                    _ = self.block_sender.send(envelope);
+                    _ = self.block_sender.send(envelope.payload);
                     MessageAcceptance::Accept
                 } else {
                     tracing::warn!("invalid unsafe block");
@@ -84,7 +85,7 @@ impl BlockHandler {
     pub fn new(
         chain_id: u64,
         unsafe_recv: watch::Receiver<Address>,
-    ) -> (Self, Receiver<ExecutionPayloadEnvelope>) {
+    ) -> (Self, Receiver<ExecutionPayload>) {
         let (sender, recv) = channel();
 
         let handler = Self {
@@ -103,15 +104,15 @@ impl BlockHandler {
     ///
     /// True if the block is less than 1 minute old, and correctly signed by the unsafe block
     /// signer.
-    fn block_valid(&self, envelope: &ExecutionPayloadEnvelope) -> bool {
+    fn block_valid(&self, envelope: &OptimismNetworkPayloadEnvelope) -> bool {
         let current_timestamp =
             SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs();
 
-        let is_future = envelope.payload.timestamp > current_timestamp + 5;
-        let is_past = envelope.payload.timestamp < current_timestamp - 60;
+        let is_future = envelope.payload.timestamp() > current_timestamp + 5;
+        let is_past = envelope.payload.timestamp() < current_timestamp - 60;
         let time_valid = !(is_future || is_past);
 
-        let msg = envelope.hash.signature_message(self.chain_id);
+        let msg = envelope.payload_hash.signature_message(self.chain_id);
         let block_signer = *self.unsafe_signer_recv.borrow();
         let Ok(msg_signer) = envelope.signature.recover_address_from_msg(msg) else {
             // TODO: add telemetry here if this happens.

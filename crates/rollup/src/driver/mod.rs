@@ -5,13 +5,13 @@ use std::{fmt::Debug, sync::Arc};
 use eyre::{bail, eyre, Result};
 use kona_derive::{
     errors::{PipelineError, PipelineErrorKind},
-    online::{AlloyChainProvider, AlloyL2ChainProvider, OnlineBlobProviderBuilder},
     traits::{BlobProvider, ChainProvider, L2ChainProvider},
 };
 use kona_providers::{
     blob_provider::DurableBlobProvider, InMemoryChainProvider, LayeredBlobProvider, Pipeline,
     StepResult,
 };
+use kona_providers_alloy::{AlloyChainProvider, AlloyL2ChainProvider, OnlineBlobProviderBuilder};
 use op_alloy_genesis::RollupConfig;
 use op_alloy_protocol::{BlockInfo, L2BlockInfo};
 use reth::rpc::types::engine::JwtSecret;

@@ -13,7 +13,6 @@ members = [
   "bin/hera",
   "bin/op-rs",
   "crates/net",
-  "crates/kona-providers",
   "crates/rollup",
   "crates/ser",
 ]
@@ -33,17 +32,18 @@ incremental = false
 [workspace.dependencies]
 # Workspace
 op-net = { path = "crates/net" }
-kona-providers = { path = "crates/kona-providers" }
 rollup = { path = "crates/rollup" }
 ser = { path = "crates/ser" }
 
 # Optimism
 superchain = { version = "0.5", default-features = false }
+kona-providers = "0.0.1"
+kona-providers-alloy = { git = "https://github.com/anton-rs/kona", branch = "main", default-features = true }
 kona-primitives = { git = "https://github.com/anton-rs/kona", branch = "main", default-features = true }
 kona-derive = { git = "https://github.com/anton-rs/kona", branch = "main", default-features = true }
 
 # Alloy
-alloy = { version = "0.3.6", features = [
+alloy = { version = "0.4.2", features = [
     "contract",
     "providers",
     "provider-http",
@@ -58,10 +58,16 @@ alloy = { version = "0.3.6", features = [
 ] }
 alloy-primitives = { version = "0.8", features = ["serde"] }
 alloy-rlp = "0.3"
-op-alloy-protocol = { version = "0.2.12", default-features = false }
-op-alloy-rpc-types = { version = "0.2.12", default-features = false }
-op-alloy-rpc-types-engine = { version = "0.2.12", default-features = false }
-op-alloy-genesis = { version = "0.2.12", default-features = false }
+
+# Op-Alloy
+# op-alloy-protocol = { version = "0.3", default-features = false }
+# op-alloy-rpc-types = { version = "0.3", default-features = false }
+# op-alloy-rpc-types-engine = { version = "0.3", default-features = false }
+# op-alloy-genesis = { version = "0.3", default-features = false }
+op-alloy-protocol = { git = "https://github.com/merklefruit/op-alloy", branch = "nico/feat/net-payload-envelope", default-features = false }
+op-alloy-rpc-types = { git = "https://github.com/merklefruit/op-alloy", branch = "nico/feat/net-payload-envelope", default-features = false }
+op-alloy-rpc-types-engine = { git = "https://github.com/merklefruit/op-alloy", branch = "nico/feat/net-payload-envelope", default-features = false }
+op-alloy-genesis = { git = "https://github.com/merklefruit/op-alloy", branch = "nico/feat/net-payload-envelope", default-features = false }
 
 # Tokio
 tokio = { version = "1.21", default-features = false }
@@ -71,20 +77,20 @@ serde_json = "1"
 ethereum_ssz = "0.7.1"
 
 # Reth
-reth = { git = "https://github.com/paradigmxyz/reth", rev = "000b412" }
-reth-chainspec = { git = "https://github.com/paradigmxyz/reth", rev = "000b412" }
-reth-discv5 = { git = "https://github.com/paradigmxyz/reth", rev = "000b412" }
-reth-execution-errors = { git = "https://github.com/paradigmxyz/reth", rev = "000b412" }
-reth-execution-types = { git = "https://github.com/paradigmxyz/reth", rev = "000b412" }
-reth-exex = { git = "https://github.com/paradigmxyz/reth", features = ["serde"], rev = "000b412" }
-reth-network-peers = { git = "https://github.com/paradigmxyz/reth", rev = "000b412" }
-reth-node-api = { git = "https://github.com/paradigmxyz/reth", rev = "000b412" }
-reth-node-ethereum = { git = "https://github.com/paradigmxyz/reth", rev = "000b412" }
-reth-primitives = { git = "https://github.com/paradigmxyz/reth", rev = "000b412" }
-reth-provider = { git = "https://github.com/paradigmxyz/reth", rev = "000b412" }
-reth-revm = { git = "https://github.com/paradigmxyz/reth", rev = "000b412" }
-reth-evm = { git = "https://github.com/paradigmxyz/reth", rev = "000b412" }
-reth-tracing = { git = "https://github.com/paradigmxyz/reth", rev = "000b412" }
+reth = { git = "https://github.com/paradigmxyz/reth", rev = "a846cbd" }
+reth-chainspec = { git = "https://github.com/paradigmxyz/reth", rev = "a846cbd" }
+reth-discv5 = { git = "https://github.com/paradigmxyz/reth", rev = "a846cbd" }
+reth-execution-errors = { git = "https://github.com/paradigmxyz/reth", rev = "a846cbd" }
+reth-execution-types = { git = "https://github.com/paradigmxyz/reth", rev = "a846cbd" }
+reth-exex = { git = "https://github.com/paradigmxyz/reth", features = ["serde"], rev = "a846cbd" }
+reth-network-peers = { git = "https://github.com/paradigmxyz/reth", rev = "a846cbd" }
+reth-node-api = { git = "https://github.com/paradigmxyz/reth", rev = "a846cbd" }
+reth-node-ethereum = { git = "https://github.com/paradigmxyz/reth", rev = "a846cbd" }
+reth-primitives = { git = "https://github.com/paradigmxyz/reth", rev = "a846cbd" }
+reth-provider = { git = "https://github.com/paradigmxyz/reth", rev = "a846cbd" }
+reth-revm = { git = "https://github.com/paradigmxyz/reth", rev = "a846cbd" }
+reth-evm = { git = "https://github.com/paradigmxyz/reth", rev = "a846cbd" }
+reth-tracing = { git = "https://github.com/paradigmxyz/reth", rev = "a846cbd" }
 
 # Networking
 snap = "1.1.1"

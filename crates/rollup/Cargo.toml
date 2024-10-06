@@ -10,9 +10,9 @@ keywords.workspace = true
 categories.workspace = true
 
 [dependencies]
-kona-providers.workspace = true
-
 # OP Stack Dependencies
+kona-providers.workspace = true
+kona-providers-alloy.workspace = true
 kona-derive.workspace = true
 op-alloy-genesis.workspace = true
 op-alloy-protocol.workspace = true
@@ -41,7 +41,3 @@ tokio.workspace = true
 futures.workspace = true
 alloy.workspace = true
 hashbrown.workspace = true
-
-[features]
-default = ["online"]
-online = ["kona-derive/online"]

@@ -14,12 +14,9 @@ rust-version.workspace = true
 # Alloy
 alloy.workspace = true
 alloy-rlp.workspace = true
-
-# Kona
-kona-primitives.workspace = true
+op-alloy-rpc-types-engine.workspace = true
 
 # Networking
-ethereum_ssz.workspace = true
 snap.workspace = true
 futures.workspace = true
 discv5.workspace = true
