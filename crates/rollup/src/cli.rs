@@ -16,9 +16,6 @@ pub const DEFAULT_L2_CHAIN_ID: u64 = 10;
 /// The default L1 RPC URL to use.
 pub const DEFAULT_L1_RPC_URL: &str = "https://cloudflare-eth.com";
 
-/// The default L2 RPC URL to use.
-pub const DEFAULT_L2_RPC_URL: &str = "https://optimism.llamarpc.com/";
-
 /// The default L1 Beacon Client RPC URL to use.
 pub const DEFAULT_L1_BEACON_CLIENT_URL: &str = "http://localhost:5052/";
 
@@ -33,10 +30,6 @@ pub struct HeraArgsExt {
     /// (overrides the default rollup configuration from the registry)
     #[clap(long = "hera.l2-config-file")]
     pub l2_config_file: Option<PathBuf>,
-
-    /// RPC URL of an L2 execution client
-    #[clap(long = "hera.l2-rpc-url", default_value = DEFAULT_L2_RPC_URL)]
-    pub l2_rpc_url: Url,
 
     /// RPC URL of an L1 execution client
     /// (This is only needed when running in Standalone mode)

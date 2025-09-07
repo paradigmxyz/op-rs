@@ -11,7 +11,7 @@ mod cli;
 pub use cli::HeraArgsExt;
 
 mod engine;
-pub use engine::Engine;
+pub use engine::{EngineRelay, EngineController};
 
 mod validator;
 pub use validator::TrustedPayloadValidator;

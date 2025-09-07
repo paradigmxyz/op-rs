@@ -1,3 +1,5 @@
+//! The engine relay handles forwarding [OpAttributesWithParent] to the L2 Engine API.
+
 use std::ops::Deref;
 
 use alloy_network::AnyNetwork;
@@ -25,12 +27,12 @@ type HyperAuthClient<B = Full<Bytes>> = HyperClient<B, AuthService<Client<HttpCo
 
 /// The [`Engine`] is responsible for interacting with an L2 Engine API server.
 #[derive(Debug, Clone)]
-pub struct Engine {
+pub struct EngineRelay {
     provider: RootProvider<Http<HyperAuthClient>, AnyNetwork>,
 }
 
-impl Engine {
-    /// Creates a new [`Engine`] from the provided [Url] and [JwtSecret].
+impl EngineRelay {
+    /// Creates a new [`EngineRelay`] from the provided [Url] and [JwtSecret].
     pub fn new_http(url: Url, jwt: JwtSecret) -> Self {
         let hyper_client = Client::builder(TokioExecutor::new()).build_http::<Full<Bytes>>();
 
@@ -66,7 +68,7 @@ impl Engine {
     }
 }
 
-impl Deref for Engine {
+impl Deref for EngineRelay {
     type Target = RootProvider<Http<HyperAuthClient>, AnyNetwork>;
 
     fn deref(&self) -> &Self::Target {
