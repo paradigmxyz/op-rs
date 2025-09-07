@@ -26,7 +26,7 @@ pub fn init_telemetry_stack(metrics_port: u16) -> Result<()> {
     // If unset, show target only if the filter is more verbose than INFO.
     let should_show_target = match std::env::var("RUST_LOG_TARGET") {
         Ok(val) => val != "0",
-        Err(_) => filter.max_level_hint().map_or(true, |max_level| max_level > Level::INFO),
+        Err(_) => filter.max_level_hint().is_none_or(|max_level| max_level > Level::INFO),
     };
 
     let std_layer = FmtLayer::new()
